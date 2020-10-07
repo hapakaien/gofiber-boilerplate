@@ -6,23 +6,25 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 
 	"github.com/hapakaien/gofiber-boilerplate/config"
+	"github.com/hapakaien/gofiber-boilerplate/handlers"
 )
 
 func main() {
 	// Fiber instance
 	app := fiber.New()
 
+	// Middleware
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: config.Config("CORS_DOMAIN"),
 	}))
-
-	// Comporess
 	app.Use(compress.New())
 
 	// Routes
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello world!")
+	api := app.Group("/", func(c *fiber.Ctx) error {
+		c.Accepts("application/json")
+		return c.Next()
 	})
+	api.Get("/", handlers.Home)
 
 	// 404 handler
 	app.Use(func(c *fiber.Ctx) error {
