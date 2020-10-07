@@ -2,11 +2,15 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 )
 
 func main() {
 	// Fiber instance
 	app := fiber.New()
+
+	// Comporess
+	app.Use(compress.New())
 
 	// Routes
 	app.Get("/", func(c *fiber.Ctx) error {
