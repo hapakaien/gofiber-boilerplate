@@ -1,10 +1,15 @@
 FROM golang:alpine
 
+ARG PORT=3000
+ARG	CORS_DOMAIN=*
+
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
 		CGO_ENABLED=0 \
 		GOOS=linux \
-		GOARCH=amd64
+		GOARCH=amd64 \
+		PORT=$PORT \
+		CORS_DOMAIN=$CORS_DOMAIN
 
 # Move to working directory /go/src/app
 WORKDIR /go/src
@@ -27,7 +32,7 @@ WORKDIR /go/dist
 RUN cp /go/src/app .
 
 # Export necessary port
-EXPOSE 3000
+EXPOSE $PORT
 
 # Command to run when starting the container
 CMD ["/go/dist/app"]
