@@ -20,7 +20,7 @@ COPY . .
 # Build the application
 RUN go build -o app .
 
-FROM scratch
+FROM alpine:latest
 
 ARG PORT=3000
 ARG	CORS_DOMAIN=*
