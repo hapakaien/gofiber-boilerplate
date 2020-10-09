@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  PORT: ${{ secrets.PORT }}
+  CORS_DOMAIN: ${{ secrets.CORS_DOMAIN }}
+
 jobs:
 
   build:
