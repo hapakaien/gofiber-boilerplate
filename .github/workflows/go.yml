@@ -38,7 +38,7 @@ jobs:
 
     - name: Build
       run: go build -o app .
-			
+		
   test:
     name: Test
     needs: build
