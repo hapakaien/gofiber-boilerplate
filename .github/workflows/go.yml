@@ -67,7 +67,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=hapakaien/gofiber-boilerplate
+          DOCKER_IMAGE=${{ github.repository }}
           VERSION=noop
           if [ "${{ github.event_name }}" = "schedule" ]; then
             VERSION=nightly
