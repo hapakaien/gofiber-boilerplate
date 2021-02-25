@@ -97,7 +97,7 @@ jobs:
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
       
       - name: Heroku
-        uses: gonuit/heroku-docker-deploy@v1.2.0
+        uses: gonuit/heroku-docker-deploy@v1.3.1
         if: github.event_name != 'pull_request'
         with:
           email: ${{ secrets.HEROKU_EMAIL }}
