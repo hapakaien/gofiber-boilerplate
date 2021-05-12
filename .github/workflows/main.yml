@@ -131,5 +131,4 @@ jobs:
           email: ${{ secrets.HEROKU_EMAIL }}
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ github.event.repository.name }}
-          docker_options: "-t ${{ steps.prep.outputs.tags }}"
           dockerfile_directory: ./
