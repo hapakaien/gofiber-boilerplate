@@ -63,7 +63,7 @@ jobs:
 
       - name: OCI image meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v3.1.0
         with:
           images: |
             ${{ github.repository }}
