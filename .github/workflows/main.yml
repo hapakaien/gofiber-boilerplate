@@ -76,7 +76,7 @@ jobs:
 
       - name: Buildah Action
         id: build-image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v2.5
         with:
           image: ${{ github.event.repository.name }}
           tags: ${{ steps.meta.outputs.tags }}
