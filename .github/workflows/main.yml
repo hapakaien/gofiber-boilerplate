@@ -14,12 +14,19 @@ env:
 
 jobs:
   build:
-    name: ${{ runner.os }} - ${{ matrix.go }}
+    name: ${{ matrix.label }} - ${{ matrix.go }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         go: ["1.14", "1.15", "1.16"]
+        include:
+          - os: macos-latest
+            label: 'Mac'
+          - os: ubuntu-latest
+            label: 'Linux'
+          - os: windows-latest
+            label: 'Windows'
 
     steps:
       - name: Checkout
