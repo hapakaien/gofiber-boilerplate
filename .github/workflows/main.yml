@@ -56,11 +56,6 @@ jobs:
     needs: build
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    env:
-      REGISTRY_USER: ${{ github.actor }}
-      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-      IMAGE_NAME: ghcr.io/${{ github.repository }}
 
     steps:
       - name: Checkout
@@ -73,6 +68,8 @@ jobs:
           images: |
             ${{ github.repository }}
             ghcr.io/${{ github.repository }}
+            quay.io/${{ github.repository }}
+
           tags: |
             type=edge,branch=main
             type=sha
@@ -96,6 +93,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to Quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -103,6 +107,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Update DockerHub repo description
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ${{ github.repository }}
 
   deploy:
     name: Deploy
