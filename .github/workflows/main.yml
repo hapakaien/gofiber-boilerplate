@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        go: ["1.14", "1.15", "1.16"]
+        go: ['1.14', '1.15', '1.16']
         include:
           - os: macos-latest
             label: 'Mac'
@@ -28,15 +28,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.3.4
 
-      - name: Set up Go ${{ matrix.go }}
+      - name: Set up Go v${{ matrix.go }}
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
 
-      - name: Cache
-        uses: actions/cache@v2.1.6
+      - name: Cache (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/cache@v2
         with:
-          path: ~/go/pkg/mod
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Cache (Mac)
+        if: runner.os == 'macOS'
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/Library/Caches/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Cache (Windiows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v2
+        with:
+          path: |
+            %LocalAppData%\go-build
+            ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
@@ -44,13 +69,13 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-      - name: Unit tests
+      - name: Run tests
         run: go test -v ./...
 
   publish:
     name: Publish container image
     needs: build
-    if: github.event_name == 'push'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -61,11 +86,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3.3.0
         with:
-          images: |
-            ${{ github.repository }}
-            ghcr.io/${{ github.repository }}
-            quay.io/${{ github.repository }}
-
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=edge,branch=main
             type=sha
@@ -76,25 +97,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Login to GHCR
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to Quay.io
-        uses: docker/login-action@v1
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -104,17 +112,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Update DockerHub repo description
-        uses: peter-evans/dockerhub-description@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: ${{ github.repository }}
-
   deploy:
     name: Deploy
     needs: publish
-    if: github.event_name == 'push'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     env:
       PORT: ${{ secrets.PORT }}
