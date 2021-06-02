@@ -89,6 +89,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=edge,branch=main
+            type=ref,event=branch
             type=sha
 
       - name: Set up QEMU
