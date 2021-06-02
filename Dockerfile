@@ -1,38 +1,36 @@
-FROM golang:alpine AS builder
+# Build stage
+FROM docker.io/library/golang:1.16-alpine AS build
 
-# Set necessary environmet variables needed for our image
-ENV GO111MODULE=on \
-		CGO_ENABLED=0 \
-		GOOS=linux \
-		GOARCH=amd64
+# Set necessary environmet variables
+ENV CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
 
-# Move to working directory /go/src/app
-WORKDIR /go/src
+# Set workdir
+WORKDIR /go/src/app
 
-# Copy and download dependency using go mod
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
+# Copy files to workdir
+ADD . /go/src/app
 
-# Copy the code into the container
-COPY . .
+# Build the app
+RUN go build -o /go/bin/app
 
-# Build the application
-RUN go build -o app .
+# Production stage
+FROM gcr.io/distroless/base-debian10
 
-FROM alpine:3
-
+# Set args
 ARG PORT=3000
-ARG	CORS_DOMAIN=*
-ENV PORT=$PORT \
-		CORS_DOMAIN=$CORS_DOMAIN
+ARG CORS_DOMAIN=*
 
-# Move to /dist directory as the place for resulting binary folder
-WORKDIR /app
-COPY --from=builder /go/src .
+# Set env
+ENV PORT=$PORT \
+    CORS_DOMAIN=$CORS_DOMAIN
+
+# Copy binary from build stage
+COPY --from=build /go/bin/app /
 
 # Export necessary port
 EXPOSE $PORT
 
 # Command to run when starting the container
-CMD ["./app"]
+CMD ["/app"]
