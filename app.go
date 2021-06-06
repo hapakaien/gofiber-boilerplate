@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 
-	"github.com/hapakaien/gofiber-boilerplate/config"
-	"github.com/hapakaien/gofiber-boilerplate/handlers"
+	"github.com/hapakaien/fiber-boilerplate/config"
+	"github.com/hapakaien/fiber-boilerplate/handlers"
 )
 
 func main() {
