@@ -1,4 +1,4 @@
-module github.com/hapakaien/gofiber-boilerplate
+module github.com/hapakaien/fiber-boilerplate
 
 go 1.14
 
