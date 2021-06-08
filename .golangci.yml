@@ -1,0 +1,13 @@
+linters:
+  enable:
+    - bodyclose
+    - gocritic
+    - gocyclo
+    - goimports
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
