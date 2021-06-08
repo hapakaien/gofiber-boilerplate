@@ -2,10 +2,13 @@ root = true
 
 [*]
 charset = utf-8
-indent_style = tab
+indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+[*.go]
+indent_style = tab
 
 [*.{yml,yaml}]
 indent_size = 2
