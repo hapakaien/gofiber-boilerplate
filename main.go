@@ -1,46 +1,36 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-
 	"github.com/hapakaien/fiber-boilerplate/config"
-	"github.com/hapakaien/fiber-boilerplate/handlers"
+	"github.com/hapakaien/fiber-boilerplate/routes"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 	// Use an external setup function in order
 	// to configure the app in tests as well
-	app := Setup()
+	app := setup()
 
 	// Start server
-	log.Fatal(app.Listen(":" + config.Config("PORT")))
+	log.Fatal(app.Listen(fmt.Sprint(":", config.App.Port)))
 }
 
 // Setup func to config Fiber app
-func Setup() *fiber.App {
+func setup() *fiber.App {
 	// Fiber instance
 	app := fiber.New()
 
-	// Middleware
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: config.Config("CORS_DOMAIN"),
-	}))
-	app.Use(compress.New())
-
-	// Routes
-	api := app.Group("/", func(c *fiber.Ctx) error {
-		c.Accepts("application/json")
-		return c.Next()
-	})
-	api.Get("/", handlers.Home)
+	// Route
+	routes.Api(app)
 
 	// 404 handler
 	app.Use(func(c *fiber.Ctx) error {
-		c.SendStatus(404)
+		c.SendStatus(fiber.StatusNotFound)
+
 		return c.JSON(fiber.Map{
 			"success": false,
 			"message": "404 not found",
