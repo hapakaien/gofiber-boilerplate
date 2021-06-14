@@ -10,19 +10,11 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.label }} - ${{ matrix.go }}
-    runs-on: ${{ matrix.os }}
+    name: Go v${{ matrix.go }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
         go: ['1.14', '1.15', '1.16']
-        include:
-          - os: macos-latest
-            label: 'Mac'
-          - os: ubuntu-latest
-            label: 'Linux'
-          - os: windows-latest
-            label: 'Windows'
 
     steps:
       - name: Checkout
@@ -33,34 +25,11 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
-      - name: Cache (Linux)
-        if: runner.os == 'Linux'
+      - name: Cache
         uses: actions/cache@v2
         with:
           path: |
             ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Cache (Mac)
-        if: runner.os == 'macOS'
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/Library/Caches/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Cache (Windiows)
-        if: runner.os == 'Windows'
-        uses: actions/cache@v2
-        with:
-          path: |
-            %LocalAppData%\go-build
             ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
