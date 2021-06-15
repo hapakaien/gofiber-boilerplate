@@ -9,7 +9,7 @@ import (
 
 func Api(app *fiber.App) {
 	// Middleware
-	api := app.Group("/", middlewares.Cors(), middlewares.Compress(), func(c *fiber.Ctx) error {
+	api := app.Group("/", middlewares.Cors(), middlewares.Favicon(), middlewares.Compress(), func(c *fiber.Ctx) error {
 		c.Accepts("application/json")
 
 		return c.Next()
