@@ -9,10 +9,16 @@ import (
 
 func Api(app *fiber.App) {
 	// Middleware
-	api := app.Group("/", middlewares.Cors(), middlewares.Favicon(), middlewares.Compress(), func(c *fiber.Ctx) error {
+	api := app.Group("/", func(c *fiber.Ctx) error {
 		c.Accepts("application/json")
 
 		return c.Next()
 	})
+	api.Use(middlewares.Cors())
+	api.Use(middlewares.Favicon())
+	api.Use(middlewares.Compress())
+	api.Use(middlewares.Etag())
+
+	// Home
 	api.Get("/", controllers.Home)
 }
