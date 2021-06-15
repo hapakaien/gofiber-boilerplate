@@ -10,7 +10,7 @@ ENV CGO_ENABLED=0 \
 WORKDIR /go/src/app
 
 # Copy files to workdir
-ADD . /go/src/app
+COPY . /go/src/app
 
 # Build the app
 RUN go build -o /go/bin/app
@@ -20,11 +20,11 @@ FROM gcr.io/distroless/base-debian10
 
 # Set args
 ARG PORT=3000
-ARG CORS_DOMAIN=*
+ARG CORS_ORIGINS=*
 
 # Set env
 ENV PORT=$PORT \
-    CORS_DOMAIN=$CORS_DOMAIN
+    CORS_ORIGINS=$CORS_ORIGINS
 
 # Copy binary from build stage
 COPY --from=build /go/bin/app /
