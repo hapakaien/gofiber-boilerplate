@@ -1,5 +1,5 @@
 # Build stage
-FROM docker.io/library/golang:1.16-alpine AS build
+FROM docker.io/library/golang:1.16.6-alpine AS build
 
 # Set necessary environmet variables
 ENV CGO_ENABLED=0 \
